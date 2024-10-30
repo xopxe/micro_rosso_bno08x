@@ -145,7 +145,9 @@ static void report_cb(int64_t last_call_time) {
 
 bool ImuBNO08x::setup( TwoWire &wire,
                      const char* topic_raw,
-                     const char* topic_mag ) {
+                     const char* topic_mag, 
+                     timer_descriptor &timer_control,
+                     timer_descriptor &timer_report ) {
   D_println("setup: imu_bno08x");
   delay(10);
   if (!bno.begin(BNO08X_ADDR, wire, BNO08X_INT, BNO08X_RST)) { return false; }
@@ -165,8 +167,8 @@ bool ImuBNO08x::setup( TwoWire &wire,
   pdescriptor_magnetic_field.topic_name = topic_mag;
   micro_rosso::publishers.push_back(&pdescriptor_magnetic_field);
 
-  micro_rosso::timer_report.callbacks.push_back(&report_cb);
-  micro_rosso::timer_control.callbacks.push_back(&control_cb);
+  timer_report.callbacks.push_back(&report_cb);
+  timer_control.callbacks.push_back(&control_cb);
 
   return true;
 }
