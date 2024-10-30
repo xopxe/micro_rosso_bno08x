@@ -15,7 +15,7 @@
     ],
 
     "dependencies": {
-        "micro_rosso_platformio": "https://github.com/xopxe/micro_rosso_platformio.git#modularization",
+        "micro_rosso_platformio": "https://github.com/xopxe/micro_rosso_platformio.git",
         "sparkfun/SparkFun BNO08x Cortex Based IMU": "^1.0.6"
       },
     "frameworks": "arduino",
