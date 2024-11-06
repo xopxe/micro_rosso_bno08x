@@ -62,21 +62,27 @@ ImuBNO08x::ImuBNO08x()
 // Here is where you define the sensor outputs you want to receive
 static bool setReports(void)
 {
-  if (!bno.enableAccelerometer())
+  if (pdescriptor_imu.topic_name != NULL)
   {
-    return false;
+    if (!bno.enableAccelerometer())
+    {
+      return false;
+    }
+    if (!bno.enableGyro())
+    {
+      return false;
+    }
+    if (!bno.enableRotationVector())
+    {
+      return false;
+    }
   }
-  if (!bno.enableGyro())
+  if (pdescriptor_magnetic_field.topic_name != NULL)
   {
-    return false;
-  }
-  if (!bno.enableRotationVector())
-  {
-    return false;
-  }
-  if (!bno.enableMagnetometer())
-  {
-    return false;
+    if (!bno.enableMagnetometer())
+    {
+      return false;
+    }
   }
 
   D_println(F("BNO Reports enabled."));
@@ -166,7 +172,7 @@ static void control_cb(int64_t last_call_time)
 
 static void report_cb(int64_t last_call_time)
 {
-  if (updated_imu)
+  if (pdescriptor_imu.topic_name != NULL && updated_imu)
   {
     updated_imu = false;
     micro_rosso::set_timestamp(msg_imu.header.stamp);
@@ -175,7 +181,7 @@ static void report_cb(int64_t last_call_time)
         &msg_imu,
         NULL));
   }
-  if (updated_magnetic_field)
+  if (pdescriptor_magnetic_field.topic_name != NULL && updated_magnetic_field)
   {
     updated_magnetic_field = false;
     micro_rosso::set_timestamp(msg_magnetic_field.header.stamp);
@@ -197,27 +203,33 @@ bool ImuBNO08x::setup(TwoWire &wire,
   {
     return false;
   }
+
+  if (topic_raw != NULL)
+  {
+    pdescriptor_imu.qos = QOS_DEFAULT;
+    pdescriptor_imu.type_support =
+        (rosidl_message_type_support_t *)ROSIDL_GET_MSG_TYPE_SUPPORT(
+            sensor_msgs, msg, Imu);
+    pdescriptor_imu.topic_name = topic_raw;
+    micro_rosso::publishers.push_back(&pdescriptor_imu);
+  }
+
+  if (topic_mag != NULL)
+  {
+    pdescriptor_magnetic_field.qos = QOS_DEFAULT;
+    pdescriptor_magnetic_field.type_support =
+        (rosidl_message_type_support_t *)ROSIDL_GET_MSG_TYPE_SUPPORT(
+            sensor_msgs, msg, MagneticField);
+    pdescriptor_magnetic_field.topic_name = topic_mag;
+    micro_rosso::publishers.push_back(&pdescriptor_magnetic_field);
+  }
+  timer_report.callbacks.push_back(&report_cb);
+  timer_control.callbacks.push_back(&control_cb);
+
   if (!setReports())
   {
     return false;
   }
-
-  pdescriptor_imu.qos = QOS_DEFAULT;
-  pdescriptor_imu.type_support =
-      (rosidl_message_type_support_t *)ROSIDL_GET_MSG_TYPE_SUPPORT(
-          sensor_msgs, msg, Imu);
-  pdescriptor_imu.topic_name = topic_raw;
-  micro_rosso::publishers.push_back(&pdescriptor_imu);
-
-  pdescriptor_magnetic_field.qos = QOS_DEFAULT;
-  pdescriptor_magnetic_field.type_support =
-      (rosidl_message_type_support_t *)ROSIDL_GET_MSG_TYPE_SUPPORT(
-          sensor_msgs, msg, MagneticField);
-  pdescriptor_magnetic_field.topic_name = topic_mag;
-  micro_rosso::publishers.push_back(&pdescriptor_magnetic_field);
-
-  timer_report.callbacks.push_back(&report_cb);
-  timer_control.callbacks.push_back(&control_cb);
 
   D_println("done.");
   return true;

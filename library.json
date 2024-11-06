@@ -1,8 +1,8 @@
 {
     "name": "micro_rosso_bno08x",
-    "version": "0.0.1",
+    "version": "0.1.0",
     "description": "BNO08x module for micro_rosso",
-    "keywords": "ros, microros, robot",
+    "keywords": "ros, micro-ros, robot, micro_rosso, bno08x",
 
     "authors":
     [
