@@ -8,7 +8,7 @@ It provides support for the BNO08x IMU by publishing ROS2 topics.
 
 First, import the module into your project's `platformio.ini`:
 
-```
+```ini
 lib_deps =
     ...
     https://github.com/xopxe/micro_rosso_bno08x.git
@@ -16,7 +16,7 @@ lib_deps =
 
 Then, in your `main.cpp`:
 
-```
+```cpp
 ...
 #include "micro_rosso_bno08x.h"
 ImuBNO08x imu;
@@ -24,7 +24,7 @@ ImuBNO08x imu;
 void setup() {
   Wire.begin(I2C_SDA, I2C_SCL); // initialize I2C as needed
   ...
-  !imu.setup(Wire);
+  imu.setup(Wire);
   ...
 }
 ```
@@ -33,12 +33,12 @@ The setup method allows passing optional topic names and different micro_rosso t
 
 This module uses two timers. The first is used to poll the I2C bus, and a fast timer is needed. The default 20Hz micro_rosso::timer_control works well. The second controls the topic publication, and the 5Hz micro_rosso::timer_report is used by default.
 
-```
+```h
   static bool setup(TwoWire &wire = Wire,
                     const char *topic_raw = "/imu/raw",
                     const char *topic_mag = "/mag",
                     timer_descriptor &timer_control = micro_rosso::timer_control,
-                    timer_descriptor &timer_report = micro_rosso::timer_report);
+                    timer_descriptor &timer = micro_rosso::timer_report);
 ```
 
 ## Using the module
