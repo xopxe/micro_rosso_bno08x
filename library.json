@@ -1,6 +1,6 @@
 {
   "name": "micro_rosso_bno08x",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "BNO08x module for micro_rosso",
   "keywords": "ros, micro-ros, robot, micro_rosso, bno08x",
   "authors": [
@@ -12,7 +12,7 @@
     }
   ],
   "dependencies": {
-    "xopxe/micro_rosso": "^0.2.0",
+    "xopxe/micro_rosso": "*",
     "sparkfun/SparkFun BNO08x Cortex Based IMU": "^1.0.6"
   },
   "frameworks": "arduino",
